@@ -10,14 +10,14 @@ class MyDataPlotter:
         self.mlon = 49
         self.nlev = 5
         self.var = 4
+        self.dy = 6378000 * 1.875 * np.pi/180
         self.load_data()
         self.configure_parameters()
-        self.horizen_temparature_advection()
-        # self.plot_data()
+        self.plot_data()
 
     def load_data(self):
         self.data = np.fromfile(self.filename, dtype='<f4')
-        self.data = self.data.reshape(self.var, self.nlev, self.nlat, self.mlon)
+        self.data = self.data.reshape(self.var, self.nlev,self.mlon,self.nlat)
 
     def configure_parameters(self):
         
@@ -27,12 +27,6 @@ class MyDataPlotter:
         self.u = self.data[1, :, :, :]
         self.v = self.data[2, :, :, :]
         self.t = self.data[3, :, :, :]
-    
-    def horizen_temparature_advection(self):
-        for i in range(self.nlev):
-            for j in range(1,self.nlat-1):
-                for k in range(1,self.mlon-1):
-                    print(i,j)
 
     def plot_data(self):
         plt.figure(figsize=(6, 3), dpi=400)
