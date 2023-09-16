@@ -49,10 +49,12 @@ class MyDataPlotter:
             ax.add_feature(cfeature.BORDERS)
             var = factor[level,:,:]
             contour = ax.contourf(self.lon, self.lat, var,cmap = 'jet')
-            ax.set_title(str(levels[level])+title)
+            file = str(levels[level])+title
+            ax.set_title(file)
             ax.gridlines(draw_labels=[True,"x", "y", "bottom", "left"], linewidth=0.5, color='gray', alpha=0.5, linestyle='--')
 
             cbar = plt.colorbar(contour, ax=ax, orientation='vertical', shrink=0.7, label=label)
+            plt.savefig(file+".png")
             plt.show()
 
 if __name__ == "__main__":
@@ -61,4 +63,4 @@ if __name__ == "__main__":
     data_plotter.load_data()
     data_plotter.configure_parameters()
     t_adv = data_plotter.horizen_temparature_advection()
-    data_plotter.plot_data(t_adv*100000,'hpa Relative Vortivity Field',"Temparature (10-5e K)")
+    data_plotter.plot_data(t_adv*100000,'hpa Relative Vortivity Field',"(10-5e/s)")
