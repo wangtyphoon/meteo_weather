@@ -124,6 +124,35 @@ class MyDataPlotter:
                         rv[i, j, k] = xvalue - yvalue
         return rv
     
+    def Absolute_Vorticity_Advection(self,vor):
+        Vor_adv = np.zeros([self.nlev,  self.nlat,self.mlon])
+        # i:level j:lat m:lon
+        for i in range(self.nlev):
+            for j in range(self.nlat):
+                for k in range(1, self.mlon):
+                    if 1 <= j < self.nlat - 1 and 1 <= k < self.mlon - 1:
+                        dx = self.dy * np.cos(self.lat[j] * np.pi/180)
+                        xvalue = self.u[i, j, k]*(vor[i, j, k+1] - vor[i, j, k-1]) / (2 * dx)
+                        yvalue = self.v[i, j, k]*(vor[i, j+1, k] - vor[i, j-1, k] + 2*7.29*(10**-5)*np.sin(self.lat[j+1]*np.pi/180) - 2*7.29*(10**-5)*np.sin(self.lat[j-1]*np.pi/180)) / (2 * self.dy)
+                    else:
+                        # 單邊插植
+                        dx = self.dy * np.cos(self.lat[j] * np.pi / 180)
+                        if k == 0:
+                            xvalue = (self.u[i, j, k]*(vor[i, j, k+1] - vor[i, j, k])) /  dx
+                        elif k == self.mlon - 1:
+                            xvalue = (self.u[i, j, k]*(vor[i, j, k] - vor[i, j, k-1])) / dx
+                        else:
+                            xvalue = self.u[i, j, k]*(vor[i, j, k+1] - vor[i, j, k-1]) / (2 * dx)
+                        
+                        if j == 0:
+                            yvalue = self.v[i, j, k]*(vor[i, j+1, k] - vor[i, j, k] + 2*7.29*(10**-5)*np.sin(self.lat[j+1]*np.pi/180) - 2*7.29*(10**-5)*np.sin(self.lat[j]*np.pi/180)) / self.dy
+                        elif j == self.nlat - 1:
+                            yvalue = self.v[i, j, k]*(vor[i, j, k] - vor[i, j-1, k] + 2*7.29*(10**-5)*np.sin(self.lat[j]*np.pi/180) - 2*7.29*(10**-5)*np.sin(self.lat[j-1]*np.pi/180)) / self.dy
+                        else:
+                            yvalue = self.v[i, j, k]*(vor[i, j+1, k] - vor[i, j-1, k] + 2*7.29*(10**-5)*np.sin(self.lat[j+1]*np.pi/180) - 2*7.29*(10**-5)*np.sin(self.lat[j-1]*np.pi/180)) / (2 * self.dy)
+                    Vor_adv[i, j, k] = - xvalue - yvalue
+        return Vor_adv
+    
     def plot_data(self, factor, title, label):
         # 繪製資料
         levels = [1000, 850, 700, 500, 300]
@@ -153,6 +182,9 @@ if __name__ == "__main__":
     t_adv = data_plotter.horizental_temparature_advection()
     div = data_plotter.Divergence()
     rv = data_plotter.Relative_Vorticity()
+    Vor_adv = data_plotter.Absolute_Vorticity_Advection(rv)
     data_plotter.plot_data(t_adv * 10000, 'hpa horizental Temparature advection', "(10^-4/s)")
     data_plotter.plot_data(div * 100000, 'hpa Divergence', "(10^-5/s)")
     data_plotter.plot_data(rv * 100000, 'hpa Relative Vorticity', "(10^-5/s)")  
+    data_plotter.plot_data(Vor_adv* 1000000000, 'hpa Absolute_Vorticity_Advection', "(10^-9/s)")  
+
