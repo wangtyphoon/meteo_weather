@@ -115,7 +115,7 @@ class MyDataPlotter:
         plt.ylim(1010, 100)  # 設置 y 軸範圍
         # 添加格線
         plt.grid(True, linestyle='--', alpha=0.5)
-        # plt.savefig(title[5:] + "/" + title + ".png")
+        plt.savefig(title[5:] + "/" + title + ".png")
         plt.show()  # 顯示圖形
 
 
