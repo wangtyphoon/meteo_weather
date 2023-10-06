@@ -130,4 +130,4 @@ if __name__ == "__main__":
     data_plotter.configure_parameters()  # 配置參數
     div = data_plotter.Divergence()  # 計算相對渦度
     vs = data_plotter.Vertical_Speed(div)  # 計算垂直風速
-    data_plotter.plot_data(vs, "120E vetical velocity", "m/s)")  # 繪製資料並顯示
+    data_plotter.plot_data(vs, "120E vetical velocity", "(m/s)")  # 繪製資料並顯示
