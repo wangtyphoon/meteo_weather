@@ -105,7 +105,11 @@ class MyDataPlotter:
         var[1:,:] = factor[:, :, 16]  # 提取指定經度上的數據
         contour = plt.contour(self.lat, level, var, cmap='jet',levels = np.linspace(-0.002,0.002,9))  # 繪製等壓線，用色塊表示資料
         plt.title(title)  # 設置圖形標題
-        plt.xticks(np.linspace(15,60,10))  # 設置x軸刻度
+        # 建立x軸刻度
+        x_ticks = np.linspace(15, 60, 10)
+        # 將每個刻度轉換為字串並在後方加上"N"
+        x_ticks_N = [str(int(i)) + 'N' for i in x_ticks]
+        plt.xticks(x_ticks, x_ticks_N)  # 設置x軸刻度
         plt.yscale('log')  # 設置 y 軸為對數尺度
         plt.yticks(np.linspace(1000,100,10))  # 設置y軸刻度
         # 設置 y 軸刻度標籤格式為指數形式
