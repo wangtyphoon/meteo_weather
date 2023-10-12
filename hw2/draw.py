@@ -12,12 +12,12 @@ class MyDataPlotter:
         self.nlev = 5   # 垂直層數，指定垂直層數量
         self.var = 4    # 變數數量，指定資料中的變數數量
         self.dy = 6378000 * 1.875 * np.pi/180  # 經度間距對應的米數，計算經度方向上的距離
-        self.omega = 7.29*100000  # 地球自轉速率
 
     def load_data(self):
         # 載入資料
         self.data = np.fromfile(self.filename, dtype='<f4')  # 從二進制文件讀取數據，並指定數據類型為32位浮點數
         self.data = self.data.reshape(self.var, self.nlev,  self.nlat, self.mlon)  # 重塑數據形狀為指定的維度
+        # print(self.data)
 
     def configure_parameters(self):
         # 設定參數
