@@ -55,8 +55,8 @@ class MyDataPlotter:
                         else:
                             yvalue = (self.h[i, j , k+1] - self.h[i, j, k-1]) / (2 * dx * f) # 計算y方向上的差分
 
-                    geo_windU[i,j,k] = xvalue  #將計算結果加入資料地轉風矩陣
-                    geo_windV[i,j,k] = yvalue
+                    geo_windU[i,j,k] = xvalue  #將X方向計算結果加入資料地轉風矩陣
+                    geo_windV[i,j,k] = yvalue  #將Y方向計算結果加入資料地轉風矩陣
         
         return geo_windU,geo_windV
 
@@ -161,14 +161,43 @@ class MyDataPlotter:
     #     plt.savefig(title[5:] + "/" + title + ".png")
     #     plt.show()  # 顯示圖形
     
-    def plot_wind_vector(self,u,v):
-        # 創建網格
-        X, Y = np.meshgrid(self.lat, self.lon)
-        # # 創建風標圖
-        plt.figure(dpi=400)
-        contourf = plt.contourf(self.lon, self.lat, self.h[0,:,:],levels = np.linspace(10600,12800,23), cmap='jet')
-        cbar = plt.colorbar(contourf)
-        plt.quiver(self.lon[::2], self.lat[::2], u[::2, ::2], v[::2, ::2], scale_units='xy', scale=18, color='black')
+    def plot_wind_vector(self, u, v, title):
+        # 創建保存繪圖結果的目錄，去掉文件名的前4個字符
+        os.makedirs(title[6:], exist_ok=True)
+
+        # 計算風速
+        wspd = (u**2 + v**2)**0.5
+
+        # 創建風標圖
+        plt.figure(dpi=400)  # 創建一個新的圖形，設置DPI（每英寸點數）為400
+        ax = plt.axes(projection=ccrs.PlateCarree())  # 使用PlateCarree地圖投影
+        ax.set_extent([80, 170, 20, 65], crs=ccrs.PlateCarree())  # 設定地圖的範圍
+        ax.add_feature(cfeature.LAND)  # 添加陸地特徵
+        ax.add_feature(cfeature.COASTLINE)  # 添加海岸線特徵
+        ax.add_feature(cfeature.BORDERS)  # 添加國界特徵
+        ax.set_title(title)  # 設置圖形標題
+
+        # 繪制風速等值線
+        contourf = plt.contourf(self.lon, self.lat, wspd, cmap='jet')  # 繪制風速的等值線圖
+        cbar = plt.colorbar(contourf)  # 添加顏色條
+        cbar.set_label("wind speed (m/s)")  # 顏色條的標籤
+
+        # 繪制地形等值線
+        contour = plt.contour(self.lon, self.lat, self.h[0, :, :], levels=np.linspace(10600, 12800, 12), colors='white')
+        plt.clabel(contour, inline=True, fontsize=8, colors='white')  # 添加地形等值線標籤
+
+        # 添加網格線
+        ax.gridlines(draw_labels=[True, "x", "y", "bottom", "left"], linewidth=0.5, color='gray', alpha=0.5, linestyle='--')
+
+        # 繪制風矢量
+        plt.quiver(self.lon[::2], self.lat[::2], u[::2, ::2], v[::2, ::2], scale_units='xy', scale=12, color='black')
+
+        # 保存圖形為文件
+        plt.savefig(title[6:] + "/" + title+".png")
+
+        # 顯示圖形
+        plt.show()
+
 
        
 
@@ -179,7 +208,7 @@ if __name__ == "__main__":
     data_plotter.load_data()  # 載入資料
     data_plotter.configure_parameters()  # 配置參數
     ug,vg = data_plotter.geowind() # 計算地轉風
-    data_plotter.plot_wind_vector(9.8*ug[0,:,:],9.8*vg[0,:,:])
+    data_plotter.plot_wind_vector(9.8*ug[0,:,:],9.8*vg[0,:,:],"200mb geostrophic wind and height")
     # div = data_plotter.Divergence()  # 計算相對渦度
     # vs = data_plotter.Vertical_Speed(div)  # 計算垂直風速
     # data_plotter.plot_data(vs, "120E vetical velocity", "(m/s)")  # 繪製資料並顯示
