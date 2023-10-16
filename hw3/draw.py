@@ -208,7 +208,7 @@ if __name__ == "__main__":
     data_plotter.load_data()  # 載入資料
     data_plotter.configure_parameters()  # 配置參數
     ug,vg = data_plotter.geowind() # 計算地轉風
-    data_plotter.plot_wind_vector(9.8*ug[0,:,:],9.8*vg[0,:,:],"200mb geostrophic wind and height")
+    data_plotter.plot_wind_vector(9.8*ug[0,:,:],9.8*vg[0,:,:],"200mb geostrophic wind and height") #繪製200mb高度圖表
     # div = data_plotter.Divergence()  # 計算相對渦度
     # vs = data_plotter.Vertical_Speed(div)  # 計算垂直風速
     # data_plotter.plot_data(vs, "120E vetical velocity", "(m/s)")  # 繪製資料並顯示
