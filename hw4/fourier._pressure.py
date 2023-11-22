@@ -168,7 +168,8 @@ half(a0s, ans, bns, pressure, "simpson")  # 繪製辛普森法的波形圖
 half(a0l, anl, bnl, pressure, "leoticks")  # 繪製Leoticks方法的波形圖
 
 def extreme(fx,an,bn):
-     # 創建一個包含元素和索引的元組列表
+    # 計算振幅、相位、時間
+    # 創建一個包含元素和索引的元組列表
     indexed_lst = list(enumerate(fx))
     
     # 使用sorted將元組列表按值進行降序排序
@@ -202,6 +203,7 @@ extreme(spectral_simpson,ans,bns)
 extreme(spectral_leoticks,anl,bnl)
 
 def reduction(a0,an,bn,data,title):
+    #使用傅立葉分析還原原始數據
     time = np.linspace(1,729,729)
     pi = np.pi
     plt.figure(dpi=400)
