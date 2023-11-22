@@ -117,15 +117,16 @@ a0l, anl, bnl = fourier_leoticks(pressure)  # 使用Leoticks方法進行傅立�
 def power_spectral(an, bn, title):
     # 定義函數用於計算功率頻譜，並繪製頻譜圖
     # 返回功率頻譜
-    x = np.linspace(1,244,243)
+    x = np.linspace(1,243,243)
     fx = np.zeros(len(an))
     for n in range(243):
         fx[n] = (an[n]**2+bn[n]**2)**0.5
     plt.figure(dpi=400)
     plt.title(title+" for pressure")
+    plt.xticks(np.arange(min(x)-1, max(x), 30))
     plt.xlabel("wave number")
     plt.ylabel("amplitude")
-    plt.plot(x,fx)
+    plt.plot(x[1:],fx[1:])
     plt.grid('--')
     plt.savefig("pressure/p_spec "+title+".jpg")
     plt.show()
@@ -151,6 +152,7 @@ def half(a0,an,bn,data,title):
             value = a0+an[i]*np.cos((i+1)*x[j])+bn[i]*np.sin((i+1)*x[j])
             fx[i,j] = value
 
+
     plt.plot(time,fx[0,:],color='blue',label="year")
     plt.plot(time,fx[1,:],color='red',label="half")
     plt.legend()
@@ -164,3 +166,64 @@ def half(a0,an,bn,data,title):
 half(a0t, ant, bnt, pressure, "trapezoidal")  # 繪製梯形法的波形圖
 half(a0s, ans, bns, pressure, "simpson")  # 繪製辛普森法的波形圖
 half(a0l, anl, bnl, pressure, "leoticks")  # 繪製Leoticks方法的波形圖
+
+def extreme(fx,an,bn):
+     # 創建一個包含元素和索引的元組列表
+    indexed_lst = list(enumerate(fx))
+    
+    # 使用sorted將元組列表按值進行降序排序
+    sorted_lst = sorted(indexed_lst, key=lambda x: x[1], reverse=True)
+    
+    top_five_indices = [index for index, value in sorted_lst[:5]]
+    incremented_indices = [index + 1 for index in top_five_indices]
+    print(incremented_indices)
+    amplitude = []
+    phase = []
+    date = []
+    for i in top_five_indices:
+        amplitude.append(round(np.sqrt(an[i]**2+bn[i]**2),2))
+        if np.arctan(-bn[i]/an[i])>0:
+            phase.append(round(np.arctan(-bn[i]/an[i])-2*np.pi,2))
+        else:
+            phase.append(round(np.arctan(-bn[i]/an[i]),2))
+        if np.arctan(-bn[i]/an[i])>0:
+            value = -(np.arctan(-bn[i]/an[i])-2*np.pi)/(i+1)/(2*np.pi)*365
+        else:
+            value = -(np.arctan(-bn[i]/an[i]))/(i+1)/(2*np.pi)*365
+        date.append(int(round(value,0)))
+    
+    print(amplitude)
+    print(phase)
+    print(date)
+    
+
+extreme(spectral_trapezoidal,ant,bnt)
+extreme(spectral_simpson,ans,bns)
+extreme(spectral_leoticks,anl,bnl)
+
+def reduction(a0,an,bn,data,title):
+    time = np.linspace(1,729,729)
+    pi = np.pi
+    plt.figure(dpi=400)
+    x = np.linspace(-pi,pi,729)
+    plt.plot(time,data,label='original',color="black")
+    fx =  np.zeros(729)+a0
+
+    for i in range(243):
+        for j in range(729):
+            value = an[i]*np.cos((i+1)*x[j])+bn[i]*np.sin((i+1)*x[j])
+            fx[j] += value
+
+
+    plt.plot(time,fx,color='red',label='fourier', linestyle="--")
+    plt.legend()
+    plt.ylabel("pressure (hpa)")
+    plt.xlabel("time")
+    plt.title("pressure retuction "+title)
+    plt.grid('--')
+    plt.savefig("reduction/p_period "+title+".jpg")
+    plt.show()
+
+reduction(a0t, ant, bnt, pressure, "trapezoidal")  # 繪製梯形法的波形圖
+reduction(a0s, ans, bns, pressure, "simpson")  # 繪製辛普森法的波形圖
+reduction(a0l, anl, bnl, pressure, "leoticks")  # 繪製Leoticks方法的波形圖
