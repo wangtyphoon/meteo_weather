@@ -1,5 +1,6 @@
 import numpy as np  # 匯入NumPy套件，用於處理數值數據
 import matplotlib.pyplot as plt  # 匯入Matplotlib套件，用於繪圖
+import math
 
 def read_file(filename):
     # 定義函數用於讀取文件，將每一行轉換為數值並存入列表
@@ -75,6 +76,7 @@ def fourier_simpson(data):
         for j in range(0,len(data)-2,2):
             value += (data[j] * np.sin((i+1)*x[j]) + 4*data[j+1] * np.sin((i+1)*x[j+1])+data[j+2] * np.sin((i+1)*x[j+2]))/3*h/pi
         bn.append(value)
+    
     
     return a0, an, bn
 
@@ -188,10 +190,10 @@ def extreme(fx,an,bn):
         else:
             phase.append(round(np.arctan(-bn[i]/an[i]),2))
         if np.arctan(-bn[i]/an[i])>0:
-            value = -(np.arctan(-bn[i]/an[i])-2*np.pi)/(i+1)/(2*np.pi)*365
+            value = -(np.arctan(-bn[i]/an[i])-2*np.pi)/(i+1)/(2*np.pi)*365/(i+1)
         else:
-            value = -(np.arctan(-bn[i]/an[i]))/(i+1)/(2*np.pi)*365
-        date.append(int(round(value,0)))
+            value = -(np.arctan(-bn[i]/an[i]))/(i+1)/(2*np.pi)*365/(i+1)
+        date.append(math.ceil(value))
     
     print(amplitude)
     print(phase)

@@ -1,5 +1,6 @@
 import numpy as np  # 匯入NumPy套件，用於處理數值數據
 import matplotlib.pyplot as plt  # 匯入Matplotlib套件，用於繪圖
+import math
 
 def read_file(filename):
     # 定義函數用於讀取文件，將每一行轉換為數值並存入列表
@@ -11,7 +12,6 @@ def read_file(filename):
             # 將每一行的內容轉換為浮點數
             number = float(line.strip())
             data.append(number)
-            # 在這裡可以使用number進行操作，例如打印或存儲到列表中
     return data
 
 temparature = read_file("T.dat.txt")  # 讀取文件並將數值存入名為temparature的列表
@@ -25,28 +25,32 @@ def fourier_trapezoidal(data):
     a0 = 0
     an = []
     bn = []
-    
+
     # 計算a0
     for i in range(len(data)-1):
+        # 使用梯形法計算積分近似值
         a0 += ((data[i] + data[i+1])/2) * h / (2 * pi)
-    
+
     # 計算an
     for i in range(n):
         value = 0
         x = np.linspace(-pi, pi, len(data))
         for j in range(len(data)-1):
+            # 使用梯形法計算an的積分近似值
             value += ((data[j] * np.cos((i+1) * x[j]) + data[j+1] * np.cos((i+1) * x[j+1])) / 2) * h / pi
         an.append(value)
-    
+
     # 計算bn
     for i in range(n):
         value = 0
         x = np.linspace(-pi, pi, len(data))
         for j in range(len(data)-1):
+            # 使用梯形法計算bn的積分近似值
             value += ((data[j] * np.sin((i+1) * x[j]) + data[j+1] * np.sin((i+1) * x[j+1])) / 2) * h / pi
         bn.append(value)
-    
+
     return a0, an, bn
+
 
 def fourier_simpson(data):
     # 定義辛普森法進行傅立葉分析的函數
@@ -189,10 +193,10 @@ def extreme(fx,an,bn):
         else:
             phase.append(round(np.arctan(-bn[i]/an[i]),2))
         if np.arctan(-bn[i]/an[i])>0:
-            value = -(np.arctan(-bn[i]/an[i])-2*np.pi)/(i+1)/(2*np.pi)*365
+            value = -(np.arctan(-bn[i]/an[i])-2*np.pi)/(i+1)/(2*np.pi)*365/(i+1)
         else:
-            value = -(np.arctan(-bn[i]/an[i]))/(i+1)/(2*np.pi)*365
-        date.append(int(round(value,0)))
+            value = -(np.arctan(-bn[i]/an[i]))/(i+1)/(2*np.pi)*365/(i+1)
+        date.append(math.ceil(value))
     
     print(amplitude)
     print(phase)
